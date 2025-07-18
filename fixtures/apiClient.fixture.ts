@@ -1,15 +1,17 @@
-import {test as base} from '@playwright/test';
-import { TodoAPI } from '../src/api/todos';
+import { test as base } from "@playwright/test";
+import { TodoApi } from "../src/api/todos/todos.api";
 
 type Fixtures = {
-    todoApi: TodoAPI
-}
+  todoApi: TodoApi;
+};
 
 export const test = base.extend<Fixtures>({
-    todoApi: async ({baseURL}, use) => {
-        const todoApi = new TodoAPI(baseURL!);
-        await todoApi.init();
-        await use(todoApi);
-        await todoApi.close();
+  todoApi: async ({ baseURL, request }, use) => {
+    if (!baseURL) {
+      throw new Error("baseURL is not provided");
     }
-})
+    const todoApi = new TodoApi(request, baseURL);
+    await use(todoApi);
+    await todoApi.close();
+  },
+});
